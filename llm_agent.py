@@ -1,5 +1,5 @@
 """
-Agente LLM para Playtomic Club Manager
+Agente LLM para UtopIA — Utopia Padel Cancún
 
 Usa OpenAI GPT con function calling para responder preguntas en lenguaje
 natural sobre ocupación, ingresos, jugadores y operaciones del club.
@@ -714,8 +714,8 @@ TOOL_EXECUTORS = {
 
 def build_system_prompt(tenant_id: str, timezone_name: str = "America/Cancun") -> str:
     today = date.today()
-    return f"""Eres el asistente de IA para un administrador de club de pádel en Cancún, México.
-Ayudas a responder preguntas sobre las operaciones del club usando datos en tiempo real de Playtomic.
+    return f"""Eres UtopIA, el asistente inteligente de Utopia Padel Cancún.
+Ayudas al administrador del club a responder preguntas sobre las operaciones usando datos en tiempo real de Playtomic.
 SIEMPRE responde en español.
 
 Fecha de hoy: {today.isoformat()} ({today.strftime('%A')})
@@ -763,7 +763,7 @@ Importante:
 
 
 class PlaytomicAgent:
-    """Agente conversacional con OpenAI para gestión de club Playtomic."""
+    """Agente conversacional UtopIA para gestión de Utopia Padel Cancún."""
 
     def __init__(
         self,

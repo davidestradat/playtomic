@@ -1,7 +1,7 @@
 """
-Playtomic Club Manager — Panel de Analítica con IA
+UtopIA — Asistente Inteligente de Utopia Padel Cancún
 
-Aplicación Streamlit que permite a los administradores de clubes de pádel
+Aplicación Streamlit que permite a los administradores del club
 hacer preguntas en lenguaje natural sobre ocupación, reservas, ingresos y operaciones.
 """
 
@@ -37,7 +37,7 @@ CLUB_TIMEZONE = get_secret("CLUB_TIMEZONE", "America/Cancun")
 # ── Página ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="Playtomic Club Manager",
+    page_title="UtopIA — Utopia Padel Cancún",
     page_icon="🎾",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -53,8 +53,8 @@ st.markdown("""
 # ── Barra lateral ──────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.title("Playtomic Club Manager")
-    st.caption("Analítica de club con IA")
+    st.title("UtopIA")
+    st.caption("Asistente Inteligente — Utopia Padel Cancún")
     st.divider()
 
     if st.button("Limpiar conversación", use_container_width=True):
@@ -64,7 +64,7 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
-    st.caption("Hecho con Streamlit + OpenAI + Playtomic API")
+    st.caption("Hecho con UtopIA + Playtomic API")
 
 # ── Validar configuración ──────────────────────────────────────────────
 
@@ -76,7 +76,7 @@ if not TENANT_ID:
 if not OPENAI_KEY:
     missing.append("OPENAI_API_KEY")
 
-st.header("Asistente del Club")
+st.header("UtopIA")
 
 if missing:
     st.error("Falta configuración en el archivo `.env`:")
@@ -107,14 +107,14 @@ if "messages" not in st.session_state:
 if not st.session_state.messages:
     with st.chat_message("assistant", avatar="🎾"):
         st.markdown(
-            "¡Hola! Soy tu **Asistente de Club Playtomic**. "
+            "¡Hola! Soy **UtopIA**, tu asistente inteligente de **Utopia Padel Cancún**. "
             "Te puedo ayudar con:\n\n"
             '- **Ocupación de canchas** — *"¿Qué tan lleno está el club mañana?"*\n'
             '- **Detalle de reservas** — *"¿Quién jugó en Hirostar ayer?"*\n'
             '- **Ingresos** — *"¿Cuánto facturamos esta semana?"*\n'
             '- **Jugadores** — *"¿Quiénes son los que más reservan este mes?"*\n'
             '- **Alertas operativas** — *"¿Cuál es nuestra tasa de cancelación?"*\n\n'
-            "¡Pregúntame lo que necesites sobre tu club de pádel!"
+            "¡Pregúntame lo que necesites!"
         )
 
 # Historial del chat

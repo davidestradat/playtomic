@@ -1,8 +1,8 @@
 """
-Playtomic Club Manager — AI-Powered Dashboard
+Playtomic Club Manager — Panel de Analítica con IA
 
-A Streamlit app that lets padel club managers ask natural language
-questions about occupancy, revenue, members, and operations.
+Aplicación Streamlit que permite a los administradores de clubes de pádel
+hacer preguntas en lenguaje natural sobre ocupación, reservas, ingresos y operaciones.
 """
 
 import os
@@ -25,7 +25,7 @@ def get_secret(key: str, default: str = "") -> str:
         return os.getenv(key, default)
 
 
-# ── Load config ─────────────────────────────────────────────────────────
+# ── Configuración ───────────────────────────────────────────────────────
 
 CLIENT_ID = get_secret("PLAYTOMIC_CLIENT_ID")
 CLIENT_SECRET = get_secret("PLAYTOMIC_CLIENT_SECRET")
@@ -34,7 +34,7 @@ OPENAI_KEY = get_secret("OPENAI_API_KEY")
 OPENAI_MODEL = get_secret("OPENAI_MODEL", "gpt-4o")
 CLUB_TIMEZONE = get_secret("CLUB_TIMEZONE", "America/Cancun")
 
-# ── Page config ─────────────────────────────────────────────────────────
+# ── Página ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
     page_title="Playtomic Club Manager",
@@ -50,23 +50,23 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Sidebar: minimal ────────────────────────────────────────────────────
+# ── Barra lateral ──────────────────────────────────────────────────────
 
 with st.sidebar:
     st.title("Playtomic Club Manager")
-    st.caption("AI-powered club analytics")
+    st.caption("Analítica de club con IA")
     st.divider()
 
-    if st.button("Clear Conversation", use_container_width=True):
+    if st.button("Limpiar conversación", use_container_width=True):
         st.session_state.messages = []
         if "agent" in st.session_state:
             st.session_state.agent.reset_conversation()
         st.rerun()
 
     st.divider()
-    st.caption("Built with Streamlit + OpenAI + Playtomic API")
+    st.caption("Hecho con Streamlit + OpenAI + Playtomic API")
 
-# ── Validate .env ───────────────────────────────────────────────────────
+# ── Validar configuración ──────────────────────────────────────────────
 
 missing = []
 if not CLIENT_ID or not CLIENT_SECRET:
@@ -76,15 +76,15 @@ if not TENANT_ID:
 if not OPENAI_KEY:
     missing.append("OPENAI_API_KEY")
 
-st.header("Club Manager Assistant")
+st.header("Asistente del Club")
 
 if missing:
-    st.error("Missing configuration in `.env` file:")
+    st.error("Falta configuración en el archivo `.env`:")
     for item in missing:
         st.markdown(f"- `{item}`")
     st.stop()
 
-# ── Initialize agent ────────────────────────────────────────────────────
+# ── Inicializar agente ─────────────────────────────────────────────────
 
 if "agent" not in st.session_state:
     api = PlaytomicAPI(CLIENT_ID, CLIENT_SECRET, tz_name=CLUB_TIMEZONE)
@@ -98,26 +98,26 @@ if "agent" not in st.session_state:
 
 agent = st.session_state.agent
 
-# ── Chat interface ──────────────────────────────────────────────────────
+# ── Interfaz de chat ───────────────────────────────────────────────────
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Welcome message
+# Mensaje de bienvenida
 if not st.session_state.messages:
     with st.chat_message("assistant", avatar="🎾"):
         st.markdown(
-            "Welcome! I'm your **Playtomic Club Manager Assistant**. "
-            "I can help you with:\n\n"
-            "- **Court Occupancy** — *\"How busy is the club tomorrow?\"*\n"
-            "- **Booking Details** — *\"Who played on Hirostar yesterday?\"*\n"
-            "- **Revenue Analytics** — *\"What was our revenue this week?\"*\n"
-            "- **Member Insights** — *\"Who are our top bookers this month?\"*\n"
-            "- **Operational Alerts** — *\"What's our cancellation rate?\"*\n\n"
-            "Ask me anything about your padel club!"
+            "¡Hola! Soy tu **Asistente de Club Playtomic**. "
+            "Te puedo ayudar con:\n\n"
+            '- **Ocupación de canchas** — *"¿Qué tan lleno está el club mañana?"*\n'
+            '- **Detalle de reservas** — *"¿Quién jugó en Hirostar ayer?"*\n'
+            '- **Ingresos** — *"¿Cuánto facturamos esta semana?"*\n'
+            '- **Jugadores** — *"¿Quiénes son los que más reservan este mes?"*\n'
+            '- **Alertas operativas** — *"¿Cuál es nuestra tasa de cancelación?"*\n\n'
+            "¡Pregúntame lo que necesites sobre tu club de pádel!"
         )
 
-# Render chat history
+# Historial del chat
 for msg in st.session_state.messages:
     avatar = "🎾" if msg["role"] == "assistant" else None
     with st.chat_message(msg["role"], avatar=avatar):
@@ -125,14 +125,14 @@ for msg in st.session_state.messages:
         for fig in msg.get("charts", []):
             st.plotly_chart(fig, use_container_width=True)
 
-# Chat input
-if prompt := st.chat_input("Ask about your club... (e.g. 'Who played on Hirostar yesterday?')"):
+# Entrada de chat
+if prompt := st.chat_input("Pregunta sobre tu club... (ej: '¿Quién jugó en Hirostar ayer?')"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant", avatar="🎾"):
-        with st.spinner("Analyzing your club data..."):
+        with st.spinner("Analizando los datos del club..."):
             try:
                 response, chart_data = agent.chat(prompt)
                 st.markdown(response)
@@ -150,7 +150,7 @@ if prompt := st.chat_input("Ask about your club... (e.g. 'Who played on Hirostar
                     "charts": all_figures,
                 })
             except Exception as e:
-                error_msg = f"Sorry, I encountered an error: {str(e)}"
+                error_msg = f"Lo siento, ocurrió un error: {str(e)}"
                 st.error(error_msg)
                 st.session_state.messages.append(
                     {"role": "assistant", "content": error_msg}

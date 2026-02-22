@@ -47,12 +47,14 @@ st.markdown("""
 <style>
     .stApp { max-width: 1200px; margin: 0 auto; }
     div[data-testid="stChatMessage"] { padding: 1rem; }
-    #MainMenu { visibility: hidden; }
-    header[data-testid="stHeader"] .stActionButton { display: none; }
-    .stDeployButton { display: none; }
-    [data-testid="manage-app-button"] { display: none; }
-    .viewerBadge_container__r5tak { display: none; }
-    ._profileContainer_gzau3_53 { display: none; }
+    .stDeployButton { display: none !important; }
+    [data-testid="manage-app-button"] { display: none !important; }
+    .viewerBadge_container__r5tak { display: none !important; }
+    ._profileContainer_gzau3_53 { display: none !important; }
+    a[href*="github.com"] img { display: none !important; }
+    .stMainMenu-link[href*="github"] { display: none !important; }
+    iframe[src*="github"] { display: none !important; }
+    [data-testid="stHeader"] a[href*="github"] { display: none !important; }
     footer { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)

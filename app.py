@@ -52,12 +52,29 @@ st.markdown("""
 
 # ── Barra lateral ──────────────────────────────────────────────────────
 
+QUICK_PROMPTS = {
+    "📊 Resumen de hoy": "¿Cómo estuvo el club hoy? Dame un resumen completo de reservas, ocupación e ingresos.",
+    "📅 Resumen de la semana": "¿Cómo va la semana? Muéstrame ocupación e ingresos de esta semana.",
+    "💰 Ingresos del mes": "¿Cuánto hemos facturado este mes? Desglose por cancha y día.",
+    "👥 Top jugadores": "¿Quiénes son los jugadores que más reservan este mes?",
+    "⚠️ Alertas operativas": "¿Hay algo que deba atender? Cancelaciones, impagos, horarios muertos.",
+    "🕐 Disponibilidad mañana": "¿Qué disponibilidad hay mañana? ¿Qué canchas están libres?",
+}
+
 with st.sidebar:
     st.title("UtopIA")
     st.caption("Asistente Inteligente — Utopia Padel Cancún")
     st.divider()
 
-    if st.button("Limpiar conversación", use_container_width=True):
+    st.subheader("Consultas rápidas")
+    for label, prompt_text in QUICK_PROMPTS.items():
+        if st.button(label, use_container_width=True):
+            st.session_state.pending_prompt = prompt_text
+            st.rerun()
+
+    st.divider()
+
+    if st.button("🗑️ Limpiar conversación", use_container_width=True):
         st.session_state.messages = []
         if "agent" in st.session_state:
             st.session_state.agent.reset_conversation()
@@ -124,6 +141,38 @@ for msg in st.session_state.messages:
         st.markdown(msg["content"])
         for fig in msg.get("charts", []):
             st.plotly_chart(fig, use_container_width=True)
+
+# Procesar consulta rápida del sidebar
+if "pending_prompt" in st.session_state:
+    prompt = st.session_state.pop("pending_prompt")
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant", avatar="🎾"):
+        with st.spinner("Analizando los datos del club..."):
+            try:
+                response, chart_data = agent.chat(prompt)
+                st.markdown(response)
+
+                all_figures = []
+                for tool_name, tool_result in chart_data:
+                    all_figures.extend(build_charts(tool_name, tool_result))
+
+                for fig in all_figures:
+                    st.plotly_chart(fig, use_container_width=True)
+
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": response,
+                    "charts": all_figures,
+                })
+            except Exception as e:
+                error_msg = f"Lo siento, ocurrió un error: {str(e)}"
+                st.error(error_msg)
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": error_msg}
+                )
 
 # Entrada de chat
 if prompt := st.chat_input("Pregunta sobre tu club... (ej: '¿Quién jugó en Hirostar ayer?')"):

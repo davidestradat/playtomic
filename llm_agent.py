@@ -793,6 +793,7 @@ class PlaytomicAgent:
         self.model = model
         self.timezone_name = timezone_name
         set_club_timezone(timezone_name)
+        self.messages: list[dict] = []
         self._refresh_system_prompt()
 
     def _refresh_system_prompt(self):

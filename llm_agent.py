@@ -713,7 +713,7 @@ TOOL_EXECUTORS = {
 # ── Prompt del sistema ─────────────────────────────────────────────────
 
 def build_system_prompt(tenant_id: str, timezone_name: str = "America/Cancun") -> str:
-    today = date.today()
+    today = datetime.now(ZoneInfo(timezone_name)).date()
     return f"""Eres UtopIA, el asistente inteligente de Utopia Padel Cancún.
 Ayudas al administrador del club a responder preguntas sobre las operaciones usando datos en tiempo real de Playtomic.
 SIEMPRE responde en español.
@@ -791,14 +791,21 @@ class PlaytomicAgent:
         self.tenant_id = tenant_id
         self.client = openai.OpenAI(api_key=openai_api_key)
         self.model = model
+        self.timezone_name = timezone_name
         set_club_timezone(timezone_name)
-        self.system_prompt = build_system_prompt(tenant_id, timezone_name)
-        self.messages: list[dict] = [
-            {"role": "system", "content": self.system_prompt}
-        ]
+        self._refresh_system_prompt()
+
+    def _refresh_system_prompt(self):
+        """Reconstruye el system prompt con la fecha actual del club."""
+        self.system_prompt = build_system_prompt(self.tenant_id, self.timezone_name)
+        if self.messages:
+            self.messages[0] = {"role": "system", "content": self.system_prompt}
+        else:
+            self.messages = [{"role": "system", "content": self.system_prompt}]
 
     def reset_conversation(self):
         """Limpia el historial de conversación, manteniendo el prompt del sistema."""
+        self._refresh_system_prompt()
         self.messages = [{"role": "system", "content": self.system_prompt}]
 
     def chat(self, user_message: str) -> tuple[str, list[tuple[str, dict]]]:
@@ -808,8 +815,10 @@ class PlaytomicAgent:
 
         Retorna:
             (respuesta_texto, datos_gráficos) donde datos_gráficos es una lista de
+
             tuplas (nombre_herramienta, resultado_dict) para renderizar gráficos.
         """
+        self._refresh_system_prompt()
         self.messages.append({"role": "user", "content": user_message})
         chart_data: list[tuple[str, dict]] = []
 

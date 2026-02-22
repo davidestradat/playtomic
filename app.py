@@ -47,6 +47,13 @@ st.markdown("""
 <style>
     .stApp { max-width: 1200px; margin: 0 auto; }
     div[data-testid="stChatMessage"] { padding: 1rem; }
+    #MainMenu { visibility: hidden; }
+    header[data-testid="stHeader"] .stActionButton { display: none; }
+    .stDeployButton { display: none; }
+    [data-testid="manage-app-button"] { display: none; }
+    .viewerBadge_container__r5tak { display: none; }
+    ._profileContainer_gzau3_53 { display: none; }
+    footer { visibility: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
